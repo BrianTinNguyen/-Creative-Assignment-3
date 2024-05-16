@@ -1,0 +1,9 @@
+1. Initialize NPM                (npm init -y)
+2. Install Express Package       (npm i express)      
+3. Write server application      (server.js)
+4. Start server                  start server: (node .server.js), stop server: ^C
+5. Send req and res to server
+6. To view page type in http://localhost:3000 
+
+
+NOTE: Edit the Package.json file and add in ("type": "module") this lets us use ES(import) insead of require(commonjs)
