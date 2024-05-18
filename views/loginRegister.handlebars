@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/public/loginRegister.css">
+    <link rel="stylesheet" href="css/loginRegister.css">
 </head>
 <body>
 
@@ -14,43 +14,49 @@
 				<h1>Login</h1>
 			</div>
 
-			<div class="login-form">
-				<div class="control-group">
-				<input type="text" class="login-field" value="" placeholder="username" id="login-name">
-				<label class="login-field-icon fui-user" for="login-name"></label>
+			<form action="/profile" method="POST" class="pt-3">   <!-- Changed This-->
+				
+				<div class="login-form">
+					<div class="control-group">
+					<input type="email" class="login-field" placeholder="email" name="email "id="login-name">  <!-- Turn input=text to input=email-->
+					<label class="login-field-icon fui-user" for="login-name"></label>
+					</div>
+
+					<div class="control-group">
+					<input type="password" class="login-field" name="password" placeholder="password" id="login-pass">
+					<label class="login-field-icon fui-lock" for="login-pass"></label>
+					</div>
+
+					<button type="submit" class="btn btn-primary btn-large btn-block" >Submit</button>  <!-- Changed This-->
+					
+					<a class="register-link" href="#">Forgot Password?</a>
 				</div>
 
-				<div class="control-group">
-				<input type="password" class="login-field" value="" placeholder="password" id="login-pass">
-				<label class="login-field-icon fui-lock" for="login-pass"></label>
-				</div>
-
-				<a class="btn btn-primary btn-large btn-block" href="#">Login</a>
-				<a class="register-link" href="#">Forgot Password?</a>
-			</div>
+			</form>
 		</div>
 
-		<p> OR</p>
+		<p> OR</p>                <!-- REGISTER-->
 
         <div class="register-screen">
 			<div class="register-title">
-				<h1>Register</h1>
+				<h1>Create</h1>
 			</div>
 
 			<div class="register-form">
 				<div class="control2-group">
-				<input type="text" class="register-field" value="" placeholder="username" id="login-name">
-				<label class="register-field-icon fui-user" for="register-name"></label>
+				<input type="text" class="login-field" value="" placeholder="username" id="login-name">
+				<label class="login-field-icon fui-user" for="login-name"></label>
 				</div>
 
 				<div class="control2-group">
-				<input type="password" class="register-field" value="" placeholder="password" id="login-pass">
-				<label class="register-field-icon fui-lock" for="register-pass"></label>
+				<input type="password1" class="login-field" value="" placeholder="password1" id="login-pass">
+				<label class="login-field-icon fui-lock" for="login-pass"></label>
 				</div>
 
 				<a class="btn btn-primary btn-large btn-block" href="#">Register</a>
 				<a class="register-link" href="#">Forgot Password?</a>
 			</div>
+		</div>
 
 		</div>
 
