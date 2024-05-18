@@ -1,29 +1,39 @@
-import express from "express";            // Instead of common js "require" we are using import "ES"
+//========================================
+// Set Up
+//========================================
+const express = require("express")
+const handlebars = require("express-handlebars");
 const app = express();
+const hbs = handlebars.create(); //handle bar engine
+
+app.use(express.static('public'));
+
+app.engine("handlebars" , hbs.engine); //rendering engine
+app.set("view engine", "handlebars");
+
 const port = 3000;
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//========================================
+// Middleware
+//========================================
+
+
+
+//========================================
 // Routes
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//========================================
 
+app.get("/", (req, res)=>{
+    res.render("home");
+});
 
-app.get("/", (req, res) => {
-    res.send("Hello World!");
-}),
+app.get("/loginRegister", (req, res)=>{
+    res.render("loginRegister");
+});
 
-app.get("/about", (req, res) => {
-    res.send("<h1>About Me</h1>");
-}),
-
-app.get("/contact", (req, res) => {
-    res.send("<h1>Contact Me</h1>");
-}),
-
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//========================================
 // Server Activation
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//========================================
 app.listen(port, () => {
     console.log(`Server has started on port ${port}.`);
 });
