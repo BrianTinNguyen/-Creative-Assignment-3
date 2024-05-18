@@ -2,8 +2,8 @@
 // Imports
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-const express = require('express');
-const expressHandlebars = require('express-handlebars');
+const express = require('express');                       // Use express
+const expressHandlebars = require('express-handlebars');  // Session live on server, we save on db, secure  
 const session = require('express-session');
 
 
@@ -13,6 +13,7 @@ const session = require('express-session');
 
 const app = express();
 const PORT = 3000;
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // HandleBars
@@ -75,9 +76,7 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 // template
 //
 app.get('/', (req, res) => {
-    const posts = getPosts();
-    const user = getCurrentUser(req) || {};
-    res.render('home', { posts, user });
+    res.render('home', { regError: req.query.error });
 });
 
 // Register GET route is used for error response from registration
@@ -110,8 +109,7 @@ app.post('/posts', (req, res) => {
 app.post('/like/:id', (req, res) => {
     // TODO: Update post likes
 });
-app.get('/profile', isAuthenticated, (req, res) => {
-    // TODO: Render profile page
+app.get('/profile', isAuthenticated, (req, res) => {        // <-------protected route
 });
 app.get('/avatar/:username', (req, res) => {
     // TODO: Serve the avatar image for the user
@@ -119,8 +117,22 @@ app.get('/avatar/:username', (req, res) => {
 app.post('/register', (req, res) => {
     // TODO: Register a new user
 });
-app.post('/login', (req, res) => {
-    // TODO: Login a user
+app.post('/login', (req, res) => {                          //<-----------------------
+    const { email, password } = req.body;
+
+    console.log('Received login request:', email, password); // Log received email and password
+
+    // Hardcoded check for demonstration purposes
+    if (email === 'w@w' && password === '12') {
+        console.log('Login successful.'); // Log successful login
+        req.session.loggedIn = true;
+        req.session.userId = 1; // Assuming a user ID
+        console.log('Session variables set:', req.session); // Log session variables
+        res.redirect('/'); // Redirect to profile page or any other desired page
+    } else {
+        console.log('Login failed.'); // Log login failure
+        res.redirect('/loginRegister?error=Invalid credentials');
+    }
 });
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
@@ -167,12 +179,12 @@ function addUser(username) {
 }
 
 // Middleware to check if user is authenticated
-function isAuthenticated(req, res, next) {
+function isAuthenticated(req, res, next) {                  //<-----------------------
     console.log(req.session.userId);
     if (req.session.userId) {
         next();
     } else {
-        res.redirect('/login');
+        res.redirect('/loginRegister');
     }
 }
 
