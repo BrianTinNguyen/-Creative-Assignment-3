@@ -116,6 +116,7 @@ app.get('/avatar/:username', (req, res) => {
 });
 app.post('/register', (req, res) => {
     // TODO: Register a new user
+    registerUser(req, res);
 });
 app.post('/login', (req, res) => {                          //<-----------------------
     const { email, password } = req.body;
@@ -191,6 +192,17 @@ function isAuthenticated(req, res, next) {                  //<-----------------
 // Function to register a user
 function registerUser(req, res) {
     // TODO: Register a new user and redirect appropriately
+    const username = req.body.username;
+    console.log("Checking register:", username);
+
+    if(findUserByUsername(username)){ //if username already used, redirect error
+        res.redirect('/register?error=Username+already+exists');
+    }
+    else{   //if username new, add username
+        addUser(username);
+        res.redirect('/login');
+    }
+    
 }
 
 // Function to login a user
