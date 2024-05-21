@@ -114,15 +114,18 @@ app.get('/profile', isAuthenticated, (req, res) => {        // <-------protected
 app.get('/avatar/:username', (req, res) => {
     // TODO: Serve the avatar image for the user
 });
+
 app.post('/register', (req, res) => {
     // TODO: Register a new user
     registerUser(req, res);
 });
+
 app.post('/login', (req, res) => {                          //<-----------------------
     const { email, password } = req.body;
 
     console.log('Received login request:', email, password); // Log received email and password
-
+    loginUser(req, res);
+    
     // Hardcoded check for demonstration purposes
     if (email === 'w@w' && password === '12') {
         console.log('Login successful.'); // Log successful login
@@ -196,7 +199,7 @@ function registerUser(req, res) {
     console.log("Checking register:", username);
 
     if(findUserByUsername(username)){ //if username already used, redirect error
-        res.redirect('/register?error=Username+already+exists');
+        res.redirect('/register?error=Email+already+exists');
     }
     else{   //if username new, add username
         addUser(username);
@@ -208,11 +211,31 @@ function registerUser(req, res) {
 // Function to login a user
 function loginUser(req, res) {
     // TODO: Login a user and redirect appropriately
+    const username = req.body.username;
+    const user = findUserByUsername(username);
+
+    if(user){
+        req.session.userId = user.id;
+        req.session.loggedIn = true;
+        res.redirect('/');
+    }
+    else{
+        res.redirect('/login?error=Invalid+username');
+    }
 }
 
 // Function to logout a user
 function logoutUser(req, res) {
     // TODO: Destroy session and redirect appropriately
+    req.session.destroy(err => {
+        if(err){    //if error display error
+            console.error('Error destroying session:', err);
+            res.redirect('/error'); //redirect to error page
+        }
+        else{   //if no error
+            res.redirect('/'); // redirect to home page
+        }
+    })
 }
 
 // Function to render the profile page
