@@ -148,6 +148,7 @@ app.post('/login', (req, res) => {                          //<-----------------
 });
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
+    logoutUser(req, res);
     req.session.destroy((err) => {
         if(err){
             return res.status(500).send('Failed to logout');
