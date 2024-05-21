@@ -121,9 +121,9 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/login', (req, res) => {                          //<-----------------------
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    console.log('Received login request:', email, password); // Log received email and password
+    console.log('Received login request:', username, password); // Log received email and password
     loginUser(req, res);
     
     req.session.regenerate((err) => {
@@ -134,6 +134,8 @@ app.post('/login', (req, res) => {                          //<-----------------
         req.session.userId = 'user-id';
         res.send('Logged In');
     })
+
+    /*
     // Hardcoded check for demonstration purposes
     if (email === 'w@w' && password === '12') {
         console.log('Login successful.'); // Log successful login
@@ -144,8 +146,9 @@ app.post('/login', (req, res) => {                          //<-----------------
     } else {
         console.log('Login failed.'); // Log login failure
         res.redirect('/loginRegister?error=Invalid credentials');
-    }
+    }*/
 });
+
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
     logoutUser(req, res);
@@ -157,6 +160,7 @@ app.get('/logout', (req, res) => {
         res.send('Logged Out');
     })
 });
+
 app.post('/delete/:id', isAuthenticated, (req, res) => {
     // TODO: Delete a post if the current user is the owner
 });
@@ -208,6 +212,7 @@ function findUserById(userId) {
 // Function to add a new user
 function addUser(username) {
     // TODO: Create a new user object and add to users array
+    users.push({id: users[length], username: username, avatar_url: undefined, memberSince: Date.now()});
 }
 
 // Middleware to check if user is authenticated
