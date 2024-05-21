@@ -128,11 +128,14 @@ app.post('/login', (req, res) => {                          //<-----------------
     
     req.session.regenerate((err) => {
         if(err){
+            //res.redirect('/login?error=Invalid+username');
             return res.status(500).send('Failed to regenerate session');
         }
         
-        req.session.userId = 'user-id';
-        res.send('Logged In');
+        //req.session.userId = 'user-id';
+        //res.redirect('/');
+        //res.send('Logged In');
+        
     })
 
     /*
@@ -212,7 +215,11 @@ function findUserById(userId) {
 // Function to add a new user
 function addUser(username) {
     // TODO: Create a new user object and add to users array
-    users.push({id: users[length], username: username, avatar_url: undefined, memberSince: Date.now()});
+    const date = new Date();
+    const dateString = date.toISOString();
+    const day = dateString.split('T')[0];
+    const hour = dateString.split('T')[1].split(':').slice(0, 2).join(':');
+    users.push({id: (users.length) + 1, username: username, avatar_url: undefined, memberSince: day + " " + hour});
 }
 
 // Middleware to check if user is authenticated
@@ -232,10 +239,13 @@ function registerUser(req, res) {
     console.log("Checking register:", username);
 
     if(findUserByUsername(username)){ //if username already used, redirect error
-        res.redirect('/register?error=Email+already+exists');
+        console.log("Already Exists");
+        res.redirect('/login?error=Username+already+exists');
     }
     else{   //if username new, add username
+        console.log("Adding user");
         addUser(username);
+        console.log(JSON.stringify(users, null, 2));
         res.redirect('/login');
     }
     
@@ -245,14 +255,17 @@ function registerUser(req, res) {
 function loginUser(req, res) {
     // TODO: Login a user and redirect appropriately
     const username = req.body.username;
+    console.log("Checking users:", username);
     const user = findUserByUsername(username);
 
     if(user){
+        console.log("Found");
         req.session.userId = user.id;
         req.session.loggedIn = true;
         res.redirect('/');
     }
     else{
+        console.log("Not found");
         res.redirect('/login?error=Invalid+username');
     }
 }
