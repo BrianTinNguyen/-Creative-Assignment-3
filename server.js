@@ -55,7 +55,7 @@ app.use(
 // should be used in your template files. 
 // 
 app.use((req, res, next) => {
-    res.locals.appName = 'MicroBlog';
+    res.locals.appName = 'MicroBloog';
     res.locals.copyrightYear = 2024;
     res.locals.postNeoType = 'Post';
     res.locals.loggedIn = req.session.loggedIn || false;
@@ -102,7 +102,7 @@ app.get('/error', (req, res) => {
 
 app.get('/post/:id', (req, res) => {
     // TODO: Render post detail page
-    getPosts();
+    res.render('posts', getPosts());
 });
 app.post('/posts', (req, res) => {
     // TODO: Add a new post and redirect to home
@@ -156,13 +156,13 @@ app.post('/login', (req, res) => {                          //<-----------------
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
     logoutUser(req, res);
-    /*req.session.destroy((err) => {
+    req.session.destroy((err) => {
         if(err){
             return res.status(500).send('Failed to logout');
         }
-        res.clearCookie('sessionId');
+        //res.clearCookie('sessionId');
         //res.send('Logged Out');
-    })*/
+    })
 });
 
 app.post('/delete/:id', isAuthenticated, (req, res) => {
@@ -263,7 +263,8 @@ function loginUser(req, res) {
         console.log("Found");
         req.session.userId = user.id;
         req.session.loggedIn = true;
-        console.log(req.session.loggedIn);
+        
+        console.log(res.locals.loggedIn);
         res.redirect('/');
     }
     else{

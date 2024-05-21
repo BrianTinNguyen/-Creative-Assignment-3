@@ -9,16 +9,14 @@
 <body>
     <header>
         <h1>MicroBloog</h1>
-        <nav>
+        <nav id="tabs">
             <a href="/">Home</a>
-            <a href="/loginRegister">Login/Register</a>
-            <a href="/profile">Profile</a>
-            <a href="/logout">Logout <span>{{user.username}}</span> </a>
-            {{#if loggedIn}}
-                <p>IT works</p>
+
+            {{#unless loggedIn}}
+                <a href="/loginRegister">Login/Register</a>
                 <div class="user-info">
 
-                <!-- conditional rendering based on variables 
+                <!--conditional rendering based on variables
                     <img src="{{#if user.avatar_url}}
                             {{user.avatar_url}}
                         {{else}}
@@ -27,7 +25,10 @@
                             alt="User Avatar" 
                             class="header-avatar">-->
                 </div>
-            {{/if}}
+            {{else}}
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout <span>{{user.username}}</span> </a>
+            {{/unless}}
         </nav>
     </header>
         
@@ -35,9 +36,25 @@
 
     <footer>
         <div class="footer">
-            <p>© 2024 Brian Nguyen. All rights reserved.</p>
+            <p>© 2024. All rights reserved.</p>
         </div>
     </footer>
- 
+
+
+<script>
+    let tabs = document.getElementById('tabs');
+    let logTabs;
+    logTabs = '<p>what</p>'
+    if(!loggedIn){
+        logTabs = '<p>what</p>'
+        //logTabs = '<a href="/loginRegister">Login/Register</a>';
+    }
+    else{
+        logTabs = '<a href="/profile">Profile</a>';
+        logTabs = '<a href="/logout">Logout <span>{{user.username}}</span> </a>';    
+    }
+    tabs.insertAdjacentHTML('afterbegin', logTabs);
+</script>
+
 </body>
 </html>

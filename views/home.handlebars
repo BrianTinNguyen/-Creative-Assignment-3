@@ -1,19 +1,11 @@
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="css/loginRegister.css">
-</head>
+
 {{! Use the main layout }}
-<!--{{!< main }}-->
+{{!< main }}
 
 {{! New Post Submission Form }}
-<body>
 <section class="content-container">
-    {{#if loggedIn}}
+    {{#unless loggedIn}}
         <!-- show the create post form when logged in -->
         <section class="post-form">
             <!-- make a header here -->
@@ -37,7 +29,7 @@
                 <!-- a div, id = "emoji-grid" -->
             </div>
         </section>
-    {{/if}}
+    {{/unless}}
 
     <section class="posts-list">
         <!-- recent posts -->
@@ -54,7 +46,6 @@
         {{/if}}
     </section>
 </section>
-</body>
 
 
 {{! JavaScript for Emoji Integration }}
