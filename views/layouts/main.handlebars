@@ -7,12 +7,27 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-
     <header>
-        <h1>Micro Blog</h1>
+        <h1>MicroBloog</h1>
         <nav>
             <a href="/">Home</a>
             <a href="/loginRegister">Login/Register</a>
+            <a href="/profile">Profile</a>
+            <a href="/logout">Logout <span>{{user.username}}</span> </a>
+            {{#if loggedIn}}
+                <p>IT works</p>
+                <div class="user-info">
+
+                <!-- conditional rendering based on variables 
+                    <img src="{{#if user.avatar_url}}
+                            {{user.avatar_url}}
+                        {{else}}
+                            /avatar/{{user.username}}
+                        {{/if}}" 
+                            alt="User Avatar" 
+                            class="header-avatar">-->
+                </div>
+            {{/if}}
         </nav>
     </header>
         

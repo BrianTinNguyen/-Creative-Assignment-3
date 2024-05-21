@@ -102,6 +102,7 @@ app.get('/error', (req, res) => {
 
 app.get('/post/:id', (req, res) => {
     // TODO: Render post detail page
+    getPosts();
 });
 app.post('/posts', (req, res) => {
     // TODO: Add a new post and redirect to home
@@ -155,13 +156,13 @@ app.post('/login', (req, res) => {                          //<-----------------
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
     logoutUser(req, res);
-    req.session.destroy((err) => {
+    /*req.session.destroy((err) => {
         if(err){
             return res.status(500).send('Failed to logout');
         }
         res.clearCookie('sessionId');
-        res.send('Logged Out');
-    })
+        //res.send('Logged Out');
+    })*/
 });
 
 app.post('/delete/:id', isAuthenticated, (req, res) => {
@@ -262,6 +263,7 @@ function loginUser(req, res) {
         console.log("Found");
         req.session.userId = user.id;
         req.session.loggedIn = true;
+        console.log(req.session.loggedIn);
         res.redirect('/');
     }
     else{
@@ -273,12 +275,13 @@ function loginUser(req, res) {
 // Function to logout a user
 function logoutUser(req, res) {
     // TODO: Destroy session and redirect appropriately
-    req.session.destroy(err => {
+    req.session.destroy((err) => {
         if(err){    //if error display error
             console.error('Error logout:', err);
             res.redirect('/error'); //redirect to error page
         }
         else{   //if no error
+            res.clearCookie('sessionId');
             res.redirect('/'); // redirect to home page
         }
     })
