@@ -126,6 +126,14 @@ app.post('/login', (req, res) => {                          //<-----------------
     console.log('Received login request:', email, password); // Log received email and password
     loginUser(req, res);
     
+    req.session.regenerate((err) => {
+        if(err){
+            return res.status(500).send('Failed to regenerate session');
+        }
+        
+        req.session.userId = 'user-id';
+        res.send('Logged In');
+    })
     // Hardcoded check for demonstration purposes
     if (email === 'w@w' && password === '12') {
         console.log('Login successful.'); // Log successful login
@@ -140,6 +148,13 @@ app.post('/login', (req, res) => {                          //<-----------------
 });
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
+    req.session.destroy((err) => {
+        if(err){
+            return res.status(500).send('Failed to logout');
+        }
+        res.clearCookie('sessionId');
+        res.send('Logged Out');
+    })
 });
 app.post('/delete/:id', isAuthenticated, (req, res) => {
     // TODO: Delete a post if the current user is the owner
@@ -170,11 +185,23 @@ let users = [
 // Function to find a user by username
 function findUserByUsername(username) {
     // TODO: Return user object if found, otherwise return undefined
+    for(let i = 0; i < users.length; i++){
+        if(users[i].username === username){
+            return users[i];
+        }
+    }
+    return null;
 }
 
 // Function to find a user by user ID
 function findUserById(userId) {
     // TODO: Return user object if found, otherwise return undefined
+    for(let i = 0; i < users.length; i++){
+        if(users[i].id === userId){
+            return users[i];
+        }
+    }
+    return null;
 }
 
 // Function to add a new user
@@ -229,7 +256,7 @@ function logoutUser(req, res) {
     // TODO: Destroy session and redirect appropriately
     req.session.destroy(err => {
         if(err){    //if error display error
-            console.error('Error destroying session:', err);
+            console.error('Error logout:', err);
             res.redirect('/error'); //redirect to error page
         }
         else{   //if no error
