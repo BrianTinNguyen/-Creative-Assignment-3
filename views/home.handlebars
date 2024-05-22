@@ -30,20 +30,36 @@
             </div>
         </section>
     {{/unless}}
-
+<div>
+            {{#each posts}}
+                <div>
+                    <p>SampleUser</p>
+                <!-- you have to pass the user in to posts and this is the syntax -->
+                <!--{{> post this user=../user}} -->
+                    <p>{{user}}</p>
+                    <p>{{content}}</p>
+                </div>
+            {{/each}}
+        </div>
     <section class="posts-list">
         <!-- recent posts -->
 
-        {{#if posts.length}}
-        <ul>
+        <!--{{#if posts.length}}-->
+        <div>
+            <p>hello</p>
+        </div>
             {{#each posts}}
+                <div>
                 <!-- you have to pass the user in to posts and this is the syntax -->
-                {{> post this user=../user}}            
+                <!--{{> post this user=../user}} -->
+                    <p>{{user}}</p>
+                    <p>{{content}}</p>
+                </div>
             {{/each}}
-        </ul>
-        {{else}}
-            <!-- no posts, oh no, what now? -->
-        {{/if}}
+        
+       <!-- {{else}}
+             no posts, oh no, what now?
+        {{/if}}-->
     </section>
 </section>
 

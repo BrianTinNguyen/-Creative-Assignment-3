@@ -76,8 +76,12 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 // template
 //
 app.get('/', (req, res) => {
-    res.render('home', { regError: req.query.error });
+    /*const posts = getPosts();
+    const user = getCurrentUser(req) || {};
+    res.render('home', { posts, user });*/
+    res.render('home', {posts});
 });
+
 
 // Register GET route is used for error response from registration
 //
@@ -100,9 +104,10 @@ app.get('/error', (req, res) => {
 // Additional routes that you must implement
 
 
-app.get('/post/:id', (req, res) => {
+app.get('/', (req, res) => {
     // TODO: Render post detail page
-    res.render('posts', getPosts());
+    //res.render('posts', getPosts());
+    res.render('/', posts);
 });
 app.post('/posts', (req, res) => {
     // TODO: Add a new post and redirect to home
