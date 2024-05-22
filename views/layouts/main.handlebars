@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=, initial-scale=1.0">
-    <title>Main</title>
+    <title>{{{appName}}}</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,6 +14,8 @@
 
             {{#unless loggedIn}}
                 <a href="/loginRegister">Login/Register</a>
+                <a href="/profile">Profile</a>
+                <a href="/logout">Logout <span>{{user.username}}</span> </a>
                 <div class="user-info">
 
                 <!--conditional rendering based on variables
