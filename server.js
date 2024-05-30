@@ -9,6 +9,8 @@ const session = require('express-session');
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const dotenv = require('dotenv');
+const { google } = require('googleapis');
+const { OAuth2Client } = require('google-auth-library');
 
 // Load environment variables from .env file
 dotenv.config();
@@ -24,6 +26,9 @@ const PORT = 3000;
 // Use environment variables for client ID and secret
 const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
+const REDIRECT_URI = 'http://localhost:3000/auth/google/callback';
+const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -78,6 +83,7 @@ app.use(express.static('public'));                  // Serve static files
 app.use(express.urlencoded({ extended: true }));    // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());                            // Parse JSON bodies (as sent by API clients)
 
+/*
 // Ensure the database is initialized before starting the server.
 initializeDB().then(() => {
     console.log('Database initialized. Server starting...');
@@ -87,6 +93,7 @@ initializeDB().then(() => {
 }).catch(err => {
     console.error('Failed to initialize the database:', err);
 });
+*/
 
 // Configure passport
 passport.use(new GoogleStrategy({
@@ -113,6 +120,7 @@ passport.deserializeUser((obj, done) => {
 // We pass the posts and user variables into the home
 // template
 //
+/*
 app.get('/user-count', (req, res) => {
     db.all('SELECT COUNT(*) AS count FROM users')
         .then(result => {
@@ -135,6 +143,14 @@ app.get('/', async (req, res) => {
     }
     const user = getCurrentUser(req) || {};
 });
+*/
+
+app.get('/', async (req, res) => {
+    const posts = getPosts();
+    const user = getCurrentUser(req) || {};
+    res.render('home', { posts: posts });
+});
+
 
 
 // Register GET route is used for error response from registration
@@ -253,14 +269,32 @@ app.get('/auth/google/callback', async (req, res) => {
     });
 
     const userinfo = await oauth2.userinfo.get();
-    res.send(`
+
+    req.session.regenerate((err) => {
+        if(err){
+            //res.redirect('/login?error=Invalid+username');
+            return res.status(500).send('Failed to regenerate session');
+        }
+
+        let user = findUserByUsername(userinfo.data.name);
+        if(!user){ //if username already used, redirect error
+            console.log("Adding user");
+            user = addUser(userinfo.data.name);
+            console.log(JSON.stringify(users, null, 2));
+        }
+
+        req.session.userId = user.id;
+        req.session.loggedIn = true;
+        res.redirect('/');    
+    })
+    /*res.send(`
         <h1>Hello, ${userinfo.data.name}</h1>
         <p>Email: ${userinfo.data.email}</p>
         <img src="${userinfo.data.picture}" alt="Profile Picture">
         <br>
         <a href="/logout">Logout from App</a>
         <br>
-    `);
+    `);*/
 });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -318,7 +352,9 @@ function getTime() {
 // Function to add a new user
 function addUser(username) {
     // TODO: Create a new user object and add to users array
-    users.push({id: (users.length) + 1, username: username, avatar_url: undefined, memberSince: getTime()});
+    const user = {id: (users.length) + 1, username: username, avatar_url: undefined, memberSince: getTime()}
+    users.push(user);
+    return user;
 }
 
 // Middleware to check if user is authenticated
