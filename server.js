@@ -76,7 +76,9 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 // template
 //
 app.get('/', (req, res) => {
-    res.render('home', { regError: req.query.error });
+    const posts = getPosts();
+    const user = getCurrentUser(req) || {};
+    res.render('home', { posts: posts});
 });
 
 // Register GET route is used for error response from registration
