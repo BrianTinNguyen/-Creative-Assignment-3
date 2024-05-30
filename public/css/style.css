@@ -13,7 +13,7 @@ a {
 body {
     font: normal 18px 'Open Sans', sans-serif;
     background: #fafafa;
-    color: #333;
+    color: #000;
 }
 
 main {
@@ -25,6 +25,7 @@ main {
 header {
     background: white;
     box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+    background-color: #A91D3A;
 }
     h1{
         font: normal 4em 'Playfair Display SC', serif;
@@ -72,4 +73,5 @@ header {
   text-align: center;
   padding: 10px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+  background-color: #A91D3A;
 }
