@@ -6,6 +6,13 @@ const express = require('express');                       // Use express
 const expressHandlebars = require('express-handlebars');  // Session live on server, we save on db, secure  
 const session = require('express-session');
 
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const dotenv = require('dotenv');
+
+// Load environment variables from .env file
+dotenv.config();
+
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Configuration and Setup
@@ -13,6 +20,10 @@ const session = require('express-session');
 
 const app = express();
 const PORT = 3000;
+
+// Use environment variables for client ID and secret
+const CLIENT_ID = process.env.CLIENT_ID;
+const CLIENT_SECRET = process.env.CLIENT_SECRET;
 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -67,6 +78,33 @@ app.use(express.static('public'));                  // Serve static files
 app.use(express.urlencoded({ extended: true }));    // Parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.json());                            // Parse JSON bodies (as sent by API clients)
 
+// Ensure the database is initialized before starting the server.
+initializeDB().then(() => {
+    console.log('Database initialized. Server starting...');
+    app.listen(3000, () => {
+        console.log('Server running on http://localhost:3000');
+    });
+}).catch(err => {
+    console.error('Failed to initialize the database:', err);
+});
+
+// Configure passport
+passport.use(new GoogleStrategy({
+    clientID: CLIENT_ID,
+    clientSecret: CLIENT_SECRET,
+    callbackURL: `http://localhost:${PORT}/auth/google/callback`
+}, (token, tokenSecret, profile, done) => {
+    return done(null, profile);
+}));
+
+passport.serializeUser((user, done) => {
+    done(null, user);
+});
+
+passport.deserializeUser((obj, done) => {
+    done(null, obj);
+});
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Routes
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -75,10 +113,27 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 // We pass the posts and user variables into the home
 // template
 //
-app.get('/', (req, res) => {
-    const posts = getPosts();
+app.get('/user-count', (req, res) => {
+    db.all('SELECT COUNT(*) AS count FROM users')
+        .then(result => {
+            const count = result[0].count;
+            res.send(`Total users: ${count}`);
+        })
+        .catch(err => {
+            console.error('Error querying database:', err);
+            res.status(500).send('Failed to retrieve data');
+        });
+});
+
+app.get('/', async (req, res) => {
+    try{
+        const posts = await db.allAsync('SELECT * FROM posts');
+        res.render('home', { posts: posts});
+    } catch(err){
+        console.error(err);
+        res.status(500).send('Internal Server Error');
+    }
     const user = getCurrentUser(req) || {};
-    res.render('home', { posts: posts, loggedIn: req.session.loggedIn});
 });
 
 
@@ -175,6 +230,37 @@ app.get('/logout', (req, res) => {
 
 app.post('/delete/:id', isAuthenticated, (req, res) => {
     // TODO: Delete a post if the current user is the owner
+});
+
+// Redirect to Google's OAuth 2.0 server
+app.get('/auth/google', (req, res) => {
+    const url = client.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    });
+    res.redirect(url);
+});
+
+// Handle OAuth 2.0 server response
+app.get('/auth/google/callback', async (req, res) => {
+    const { code } = req.query;
+    const { tokens } = await client.getToken(code);
+    client.setCredentials(tokens);
+
+    const oauth2 = google.oauth2({
+        auth: client,
+        version: 'v2',
+    });
+
+    const userinfo = await oauth2.userinfo.get();
+    res.send(`
+        <h1>Hello, ${userinfo.data.name}</h1>
+        <p>Email: ${userinfo.data.email}</p>
+        <img src="${userinfo.data.picture}" alt="Profile Picture">
+        <br>
+        <a href="/logout">Logout from App</a>
+        <br>
+    `);
 });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
