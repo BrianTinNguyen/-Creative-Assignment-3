@@ -43,23 +43,25 @@
         </div>
     <section class="posts-list">
         <!-- recent posts -->
-
-        <!--{{#if posts.length}}-->
-        <div>
-            <p>hello</p>
-        </div>
+        <ul>
             {{#each posts}}
                 <div>
                 <!-- you have to pass the user in to posts and this is the syntax -->
-                <!--{{> post this user=../user}} -->
-                    <p>{{user}}</p>
-                    <p>{{content}}</p>
-                </div>
+                <div>
+                    <div>
+                        {{username}}
+                    </div>
+                    <div>
+                        {{content}}
+                    </div>
+                </div>       
             {{/each}}
-        
-       <!-- {{else}}
-             no posts, oh no, what now?
-        {{/if}}-->
+        </ul>
+
+        {{#if posts.length}}
+        {{else}}
+            <!-- no posts, oh no, what now? -->
+        {{/if}}
     </section>
 </section>
 
@@ -121,6 +123,3 @@ function insertEmoji(emoji) {
     textarea.focus();  // Keep focus on the textarea
 }
 </script>
-
-
-

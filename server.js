@@ -76,10 +76,9 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 // template
 //
 app.get('/', (req, res) => {
-    /*const posts = getPosts();
+    const posts = getPosts();
     const user = getCurrentUser(req) || {};
-    res.render('home', { posts, user });*/
-    res.render('home', {posts});
+    res.render('home', { posts: posts});
 });
 
 

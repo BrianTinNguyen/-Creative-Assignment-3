@@ -2,14 +2,22 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">   
+    
+    <!-- font awesome for the trashcan icon --> 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">    
+    
     <title>{{{appName}}}</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <header>
-        <h1>MicroBloog</h1>
-        <nav id="tabs">
+        <div class="logo">
+            <img src="images/logo.png" class="header-logo">
+            <h1>{{{appName}}}</h1>
+        </div>
+         <nav id="tabs">
             <a href="/">Home</a>
 
             {{#unless loggedIn}}
@@ -33,30 +41,19 @@
             {{/unless}}
         </nav>
     </header>
-        
-        {{{body}}}
+
+    {{{body}}}
 
     <footer>
         <div class="footer">
-            <p>© 2024. All rights reserved.</p>
+            <p>© {{{copyrightYear}}} {{{appName}}}. All rights reserved.</p>
         </div>
     </footer>
-
-
-<script>
-    let tabs = document.getElementById('tabs');
-    let logTabs;
-    logTabs = '<p>what</p>'
-    if(!loggedIn){
-        logTabs = '<p>what</p>'
-        //logTabs = '<a href="/loginRegister">Login/Register</a>';
-    }
-    else{
-        logTabs = '<a href="/profile">Profile</a>';
-        logTabs = '<a href="/logout">Logout <span>{{user.username}}</span> </a>';    
-    }
-    tabs.insertAdjacentHTML('afterbegin', logTabs);
-</script>
-
 </body>
 </html>
+
+
+
+
+
+
