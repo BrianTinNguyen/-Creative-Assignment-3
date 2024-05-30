@@ -103,13 +103,16 @@ app.get('/error', (req, res) => {
 // Additional routes that you must implement
 
 
-app.get('/', (req, res) => {
+app.get('/post/:id', (req, res) => {
     // TODO: Render post detail page
     //res.render('posts', getPosts());
     res.render('/', posts);
 });
 app.post('/posts', (req, res) => {
     // TODO: Add a new post and redirect to home
+    const {title, content} = req.body;
+    addPost(title, content, getCurrentUser(req));
+    res.redirect('/');
 });
 app.post('/like/:id', (req, res) => {
     // TODO: Update post likes
@@ -138,7 +141,7 @@ app.post('/login', (req, res) => {                          //<-----------------
         
         //req.session.userId = 'user-id';
         loginUser(req, res);
-        console.log(res.locals.loggedIn);
+        //console.log(res.locals.loggedIn);
         //res.redirect('/');
         //res.send('Logged In');
         
@@ -218,14 +221,18 @@ function findUserById(userId) {
     return null;
 }
 
-// Function to add a new user
-function addUser(username) {
-    // TODO: Create a new user object and add to users array
+function getTime() {
     const date = new Date();
     const dateString = date.toISOString();
     const day = dateString.split('T')[0];
     const hour = dateString.split('T')[1].split(':').slice(0, 2).join(':');
-    users.push({id: (users.length) + 1, username: username, avatar_url: undefined, memberSince: day + " " + hour});
+    return day + " " + hour;
+}
+
+// Function to add a new user
+function addUser(username) {
+    // TODO: Create a new user object and add to users array
+    users.push({id: (users.length) + 1, username: username, avatar_url: undefined, memberSince: getTime()});
 }
 
 // Middleware to check if user is authenticated
@@ -310,6 +317,12 @@ function handleAvatar(req, res) {
 // Function to get the current user from session
 function getCurrentUser(req) {
     // TODO: Return the user object if the session user ID matches
+    if(req.session.userId){
+        return findUserById(req.session.userId);
+    }
+    else{
+        return null;
+    }
 }
 
 // Function to get all posts, sorted by latest first
@@ -320,6 +333,8 @@ function getPosts() {
 // Function to add a new post
 function addPost(title, content, user) {
     // TODO: Create a new post object and add to posts array
+    console.log(user);
+    posts.push({id: (posts.length) - 1, title: title, content: content, username: user.username, timestamp: getTime(), likes: 0});
 }
 
 // Function to generate an image avatar
