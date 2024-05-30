@@ -20,8 +20,7 @@
          <nav id="tabs">
             <a href="/">Home</a>
 
-            {{#unless loggedIn}}
-                <a href="/loginRegister">Login/Register</a>
+            {{#if loggedIn}}
                 <a href="/profile">Profile</a>
                 <a href="/logout">Logout <span>{{user.username}}</span> </a>
                 <div class="user-info">
@@ -36,9 +35,8 @@
                             class="header-avatar">-->
                 </div>
             {{else}}
-                <a href="/profile">Profile</a>
-                <a href="/logout">Logout <span>{{user.username}}</span> </a>
-            {{/unless}}
+                <a href="/loginRegister">Login/Register</a>
+            {{/if}}
         </nav>
     </header>
 

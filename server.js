@@ -58,7 +58,7 @@ app.use((req, res, next) => {
     res.locals.appName = 'MicroBloog';
     res.locals.copyrightYear = 2024;
     res.locals.postNeoType = 'Post';
-    res.locals.loggedIn = req.session.loggedIn || false;
+    res.locals.loggedIn = (req.session.loggedIn || false);
     res.locals.userId = req.session.userId || '';
     next();
 });
@@ -78,7 +78,7 @@ app.use(express.json());                            // Parse JSON bodies (as sen
 app.get('/', (req, res) => {
     const posts = getPosts();
     const user = getCurrentUser(req) || {};
-    res.render('home', { posts: posts});
+    res.render('home', { posts: posts, loggedIn: req.session.loggedIn});
 });
 
 
@@ -129,7 +129,6 @@ app.post('/login', (req, res) => {                          //<-----------------
     const { username, password } = req.body;
 
     console.log('Received login request:', username, password); // Log received email and password
-    loginUser(req, res);
     
     req.session.regenerate((err) => {
         if(err){
@@ -138,6 +137,8 @@ app.post('/login', (req, res) => {                          //<-----------------
         }
         
         //req.session.userId = 'user-id';
+        loginUser(req, res);
+        console.log(res.locals.loggedIn);
         //res.redirect('/');
         //res.send('Logged In');
         
@@ -159,14 +160,14 @@ app.post('/login', (req, res) => {                          //<-----------------
 
 app.get('/logout', (req, res) => {
     // TODO: Logout the user
-    logoutUser(req, res);
-    req.session.destroy((err) => {
+   /* req.session.destroy((err) => {
         if(err){
             return res.status(500).send('Failed to logout');
-        }
+        }*/
+        logoutUser(req, res);
         //res.clearCookie('sessionId');
         //res.send('Logged Out');
-    })
+    //})
 });
 
 app.post('/delete/:id', isAuthenticated, (req, res) => {
@@ -268,7 +269,6 @@ function loginUser(req, res) {
         req.session.userId = user.id;
         req.session.loggedIn = true;
         
-        console.log(res.locals.loggedIn);
         res.redirect('/');
     }
     else{
@@ -283,7 +283,7 @@ function logoutUser(req, res) {
     req.session.destroy((err) => {
         if(err){    //if error display error
             console.error('Error logout:', err);
-            res.redirect('/error'); //redirect to error page
+            //res.redirect('/error'); //redirect to error page
         }
         else{   //if no error
             res.clearCookie('sessionId');
