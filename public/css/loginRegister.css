@@ -100,6 +100,14 @@ p {
 .control2-group {
     margin-bottom: 10px;
 }
+
+.goo{
+    border: 2px solid #000;
+    padding: 5px;
+    display: inline-block;
+    margin: 2px;
+    background-color: #83B4FF;
+}
     
 
     
