@@ -299,3 +299,25 @@ function getPosts() {
 function addPost(title, content, user) {
     posts.push({ id: posts.length + 1, title, content, username: user.username, timestamp: getTime(), likes: 0 });
 }
+
+
+
+
+
+// Add route for submitting comments
+app.post('/comment/:id', isAuthenticated, (req, res) => {
+    const postId = parseInt(req.params.id);
+    const comment = req.body.comment;
+    // Find the post by ID
+    const postIndex = posts.findIndex(post => post.id === postId);
+    if (postIndex !== -1) {
+        // Add the comment to the post
+        if (!posts[postIndex].comments) {
+            posts[postIndex].comments = [];
+        }
+        posts[postIndex].comments.push({ user: req.session.userId, comment });
+        res.redirect('/');
+    } else {
+        res.status(404).send('Post not found');
+    }
+});
