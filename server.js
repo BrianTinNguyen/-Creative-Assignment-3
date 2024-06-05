@@ -301,9 +301,6 @@ function addPost(title, content, user) {
 }
 
 
-
-
-
 // Add route for submitting comments
 app.post('/comment/:id', isAuthenticated, (req, res) => {
     const postId = parseInt(req.params.id);
