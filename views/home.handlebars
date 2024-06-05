@@ -125,6 +125,11 @@
             padding: 20px;
         }
 
+        .titles{
+            text-align: center;
+            font-weight: bold;
+        }
+
     </style>
 
     {{#if loggedIn}}
@@ -157,6 +162,9 @@
                         <div class='postcontainer'>
                             <div class='userone'>
                                 {{username}} 
+                            </div>
+                            <div class='titles'>
+                                {{title}} 
                             </div>
                             <div class='contentone'>
                                 {{content}}
@@ -211,7 +219,22 @@
             { character: '😡', slug: 'grinning-face-with-smiling-eyes' },
             { character: '😈', slug: 'grinning-face-with-smiling-eyes' },
             { character: '😱', slug: 'grinning-face-with-smiling-eyes' },
-            
+            { character: '🥶', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '😴', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '👍', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '👎', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '💩', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '💀', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '🤡', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '🤢', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '🤮', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '😡', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '😵', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '😵‍💫', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '🤗', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '👊', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '🫣', slug: 'grinning-face-with-smiling-eyes' },
+            { character: '🫣', slug: 'grinning-face-with-smiling-eyes' },
             // Add more emojis here or fetch from an API
         ];
         displayEmojis(allEmojis);
