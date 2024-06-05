@@ -17,8 +17,7 @@
             <img src="images/logo.png" class="header-logo">
             <h1>{{{appName}}}</h1>
         </div>
-        <div class="tabs">
-         <nav>
+         <nav id="tabs">
             <a href="/">Home</a>
 
             {{#if loggedIn}}
@@ -38,8 +37,7 @@
             {{else}}
                 <a href="/loginRegister">Login/Register</a>
             {{/if}}
-          </nav>
-        </div>
+        </nav>
     </header>
 
     {{{body}}}

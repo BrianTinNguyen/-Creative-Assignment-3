@@ -11,9 +11,9 @@ a {
 }
 
 body {
-    font: normal 18px 'Open Sans', sans-serif;
+    font: normal 18px 'Untitled Serif';
     background: #fafafa;
-    color: #333;
+    color: #000;
 }
 
 main {
@@ -25,31 +25,18 @@ main {
 header {
     background: white;
     box-shadow: 0 0 5px rgba(0, 0, 0, 1);
+    background-color: #83B4FF;
 }
-
-
-
-.logo{
-    background-color: #cc4862;
-    padding-bottom: 20px;
-}
-
-.tabs{
-    background-color: #dadada;
-}
-
     h1{
-        font: normal 4em 'Playfair Display SC', serif;
+        font: normal 4em 'Untitled Serif';
         text-align:center;
     }
 
     nav {
-        font-weight: bold;
         max-width: 800px;
         margin: auto;
         display: flex;
         flex-wrap: wrap;
-        background-color: #dadada;
     }
 
         nav a {
@@ -66,7 +53,7 @@ header {
             bottom: 0;
             left: 0;
             right:0;
-            height: 3px;
+            height: 2px;
             transform: scaleX(0);
             background: #333;
             transition: 0.7s transform cubic-bezier(0.06, 0.9, 0.28, 1);
@@ -75,7 +62,6 @@ header {
         nav a:hover::after{
             transform: scaleX(.4)
         }
-
 
 /* Footer*/
 .footer {
