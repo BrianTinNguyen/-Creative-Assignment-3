@@ -58,7 +58,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-    res.locals.appName = 'MicroBloog';
+    res.locals.appName = 'Travel Blog';
     res.locals.copyrightYear = 2024;
     res.locals.postNeoType = 'Post';
     res.locals.loggedIn = req.session.loggedIn || false;
@@ -208,7 +208,7 @@ app.listen(PORT, () => {
 
 // Example data for posts and users
 let posts = [
-    { id: 1, title: 'Where does it come from?', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet massa vitae tortor condimentum. Ut venenatis tellus in metus vulputate eu. Congue nisi vitae suscipit tellus mauris. Risus quis varius quam quisque id diam vel. Hendrerit gravida rutrum quisque non tellus orci ac auctor. Elementum sagittis vitae et leo duis ut diam. Ac tortor vitae purus faucibus. Feugiat sed lectus vestibulum mattis ullamcorper velit. Nunc sed blandit libero volutpat sed cras. Non diam phasellus vestibulum lorem sed risus ultricies tristique. Dictum at tempor commodo ullamcorper. Arcu vitae elementum curabitur vitae nunc sed velit. Tincidunt augue interdum velit euismod in pellentesque massa placerat duis. Nec feugiat in fermentum posuere urna nec. Commodo quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Aliquam faucibus purus in massa.', username: 'NauseatingDoubtful', timestamp: '2024-01-01 10:00', likes: 0 },
+    { id: 1, title: 'Where does it come from?', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet massa vitae tortor condimentum. Ut venenatis tellus in metus vulputate eu. Congue nisi vitae suscipit tellus mauris. Risus quis varius quam quisque id diam vel. Hendrerit gravida rutrum quisque non tellus orci ac auctor. Elementum sagittis vitae et leo duis ut diam. Ac tortor vitae purus faucibus. Feugiat sed lectus vestibulum mattis ullamcorper velit. Nunc sed blandit libero volutpat sed cras. Non diam phasellus vestibulum lorem sed risus ultricies tristique. Dictum at tempor commodo ullamcorper. Arcu vitae elementum curabitur vitae nunc sed velit. Tincidunt augue interdum velit euismod in pellentesque massa placerat duis. Nec feugiat in fermentum posuere urna nec. Commodo quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Aliquam faucibus purus in massa.', username: 'NauseatingDoubtful', timestamp: '2024-01-01 10:00', likes: 0  },
     { id: 2, title: 'Are we Alone?', content: 'Quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Dui accumsan sit amet nulla facilisi morbi tempus. Nunc scelerisque viverra mauris in aliquam sem fringilla. Massa sapien faucibus et molestie ac. Imperdiet dui accumsan sit amet nulla. Iaculis at erat pellentesque adipiscing commodo elit. Scelerisque viverra mauris in aliquam sem fringilla ut morbi. Eget nullam non nisi est sit. Amet dictum sit amet justo. Nisl vel pretium lectus quam id leo. Suspendisse in est ante in nibh mauris. Sit amet consectetur adipiscing elit ut aliquam purus sit amet. Sit amet commodo nulla facilisi nullam vehicula. Eget nulla facilisi etiam dignissim diam quis enim. Mattis pellentesque id nibh tortor id aliquet lectus proin. Vulputate ut pharetra sit amet aliquam id diam maecenas ultricies. Nam at lectus urna duis convallis convallis. Mauris vitae ultricies leo integer malesuada. Urna neque viverra justo nec ultrices dui sapien eget mi.', username: 'CookingShattered', timestamp: '2024-01-02 12:00', likes: 0 },
 ];
 
