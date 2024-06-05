@@ -11,14 +11,6 @@ const dotenv = require('dotenv');
 const { google } = require('googleapis');
 const { OAuth2Client } = require('google-auth-library');
 
-const sqlite = require('sqlite');
-const sqlite3 = require('sqlite3');
-
-
-//const initializeDB = require('./populatedb');
-const dbFileName = 'blogData.db';
-//let db;
-
 // Load environment variables from .env file
 dotenv.config();
 
@@ -78,12 +70,6 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-async function initializeDB() {
-    const db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });
-    console.log('Connected to the database.');
-    return db;
-}
-
 // Configure passport
 passport.use(new GoogleStrategy({
     clientID: CLIENT_ID,
@@ -99,18 +85,10 @@ passport.deserializeUser((obj, done) => done(null, obj));
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.get('/', async (req, res) => {
-    try{
-        const db = await initializeDB();        
-        const posts = await db.all('SELECT * FROM posts');
-        console.log(posts);
-        
-        res.render('home', { posts: posts});
-    } catch(err){
-        console.error(err);
-        res.status(500).send('Internal Server Error');
-    }
+    const posts = getPosts();
+    const user = getCurrentUser(req) || {};
+    res.render('home', { posts });
 });
-
 
 app.get('/loginRegister', (req, res) => {
     res.render('loginRegister', { regError: req.query.error });

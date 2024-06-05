@@ -7,8 +7,7 @@ const sqlite3 = require('sqlite3');
 const dbFileName = 'blogData.db';
 
 async function initializeDB() {
-    console.log('Opening database file:', dbFileName);
-    let db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });
+    const db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });
 
     await db.exec(`
         CREATE TABLE IF NOT EXISTS users (
@@ -29,7 +28,6 @@ async function initializeDB() {
         );
     `);
 
-    console.log('initial data');
     // Sample data - Replace these arrays with your own data
     const users = [
         { username: 'user1', hashedGoogleId: 'hashedGoogleId1', avatar_url: '', memberSince: '2024-01-01 12:00:00' },
@@ -43,7 +41,6 @@ async function initializeDB() {
 
     // Insert sample data into the database
     await Promise.all(users.map(user => {
-        console.log(user.username, user.hashedGoogleId, user.avatar_url, user.memberSince);
         return db.run(
             'INSERT INTO users (username, hashedGoogleId, avatar_url, memberSince) VALUES (?, ?, ?, ?)',
             [user.username, user.hashedGoogleId, user.avatar_url, user.memberSince]
@@ -51,7 +48,6 @@ async function initializeDB() {
     }));
 
     await Promise.all(posts.map(post => {
-        console.log(post.title, post.content, post.username, post.timestamp, post.likes)
         return db.run(
             'INSERT INTO posts (title, content, username, timestamp, likes) VALUES (?, ?, ?, ?, ?)',
             [post.title, post.content, post.username, post.timestamp, post.likes]
@@ -65,5 +61,3 @@ async function initializeDB() {
 initializeDB().catch(err => {
     console.error('Error initializing database:', err);
 });
-
-module.export = initializeDB;
