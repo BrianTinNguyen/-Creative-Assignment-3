@@ -183,6 +183,14 @@
                 </div>
             </form>
 
+            <!-- Add file upload form -->
+            <form action="/posts" method="POST" enctype="multipart/form-data"> 
+                <input type="file" name="file">
+            </form>
+
+
+
+
             <div id="emoji-container" class="emoji-panel" style="display: none;">
                 <input type="text" id="emoji-search" placeholder="Search emojis..." oninput="searchEmojis()">
                 <div id="emoji-grid"></div>

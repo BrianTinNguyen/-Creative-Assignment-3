@@ -11,6 +11,9 @@ const dotenv = require('dotenv');
 const { google } = require('googleapis');
 const { OAuth2Client } = require('google-auth-library');
 
+const multer = require('multer'); // Import multer
+const path = require('path');
+
 // Load environment variables from .env file
 dotenv.config();
 
@@ -26,6 +29,19 @@ const CLIENT_ID = process.env.CLIENT_ID;
 const CLIENT_SECRET = process.env.CLIENT_SECRET;
 const REDIRECT_URI = `http://localhost:${PORT}/auth/google/callback`;
 const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
+
+// Set up multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads'); // Save files to this folder
+    },
+    filename: function (req, file, cb) {
+        // Rename files to avoid conflicts
+        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // HandleBars
@@ -111,7 +127,13 @@ app.get('/post/:id', (req, res) => {
     }
 });
 
-app.post('/posts', (req, res) => {
+
+
+
+
+
+
+app.post('/posts', upload.single('file'),(req, res) => {
     const { title, content } = req.body;
     addPost(title, content, getCurrentUser(req));
     res.redirect('/');
