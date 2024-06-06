@@ -17,7 +17,7 @@ const sqlite3 = require('sqlite3');
 
 //const initializeDB = require('./populatedb');
 const dbFileName = 'blogData.db';
-//let db;
+let db;
 
 // Load environment variables from .env file
 dotenv.config();
@@ -79,9 +79,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 async function initializeDB() {
-    const db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });
+    db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });
     console.log('Connected to the database.');
-    return db;
 }
 
 // Configure passport
@@ -99,11 +98,14 @@ passport.deserializeUser((obj, done) => done(null, obj));
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 app.get('/', async (req, res) => {
-    try{
-        const db = await initializeDB();        
+    try{ 
+               
         const posts = await db.all('SELECT * FROM posts');
-        console.log(posts);
-        
+        /*console.log(posts);
+        let users = await db.all('SELECT * FROM users');
+        console.log(users);
+        */
+
         res.render('home', { posts: posts});
     } catch(err){
         console.error(err);
@@ -116,7 +118,7 @@ app.get('/loginRegister', (req, res) => {
     res.render('loginRegister', { regError: req.query.error });
 });
 
-app.get('/login', (req, res) => {
+app.get('/login', async (req, res) => {
     res.render('loginRegister', { loginError: req.query.error });
 });
 
@@ -133,10 +135,15 @@ app.get('/post/:id', (req, res) => {
     }
 });
 
-app.post('/posts', (req, res) => {
-    const { title, content } = req.body;
-    addPost(title, content, getCurrentUser(req));
-    res.redirect('/');
+app.post('/posts', async (req, res) => {
+    try{
+        const { title, content } = req.body;
+        const user = await getCurrentUser(req);
+        await addPost(title, content, user);
+        res.redirect('/');
+    } catch(err){
+        console.log(err);
+    }
 });
 
 app.post('/like/:id', (req, res) => {
@@ -167,9 +174,12 @@ app.post('/register', (req, res) => {
     registerUser(req, res);
 });
 
-app.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    loginUser(req, res);
+app.post('/login', async (req, res) => {
+    try{
+        loginUser(req, res);
+    } catch(err){
+        console.log(err)
+    }
 });
 
 app.get('/logout', (req, res) => {
@@ -202,12 +212,16 @@ app.get('/auth/google/callback', async (req, res) => {
 
     const userinfo = await oauth2.userinfo.get();
 
+    //let users = await db.all('SELECT * FROM users');
+    //console.log(users);
+    let user = await findUserByUsername(userinfo.data.name);
+    console.log('login user:', user);
+
     req.session.regenerate((err) => {
         if (err) return res.status(500).send('Failed to regenerate session');
-
-        let user = findUserByUsername(userinfo.data.name);
         if (!user) {
-            user = addUser(userinfo.data.name);
+            user = addUser(userinfo);
+            console.log('adding user');
         }
 
         req.session.userId = user.id;
@@ -220,14 +234,19 @@ app.get('/auth/google/callback', async (req, res) => {
 // Server Activation
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`);
+initializeDB().then(() => {
+    console.log('Database initialized. Server starting...');
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}).catch(err => {
+    console.error('Failed to initialize the database:', err);
 });
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Support Functions and Variables
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
+/*
 // Example data for posts and users
 let posts = [
     { id: 1, title: 'Where does it come from?', content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sit amet massa vitae tortor condimentum. Ut venenatis tellus in metus vulputate eu. Congue nisi vitae suscipit tellus mauris. Risus quis varius quam quisque id diam vel. Hendrerit gravida rutrum quisque non tellus orci ac auctor. Elementum sagittis vitae et leo duis ut diam. Ac tortor vitae purus faucibus. Feugiat sed lectus vestibulum mattis ullamcorper velit. Nunc sed blandit libero volutpat sed cras. Non diam phasellus vestibulum lorem sed risus ultricies tristique. Dictum at tempor commodo ullamcorper. Arcu vitae elementum curabitur vitae nunc sed velit. Tincidunt augue interdum velit euismod in pellentesque massa placerat duis. Nec feugiat in fermentum posuere urna nec. Commodo quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Aliquam faucibus purus in massa.', username: 'NauseatingDoubtful', timestamp: '2024-01-01 10:00', likes: 0  },
@@ -238,15 +257,22 @@ let users = [
     { id: 1, username: 'SampleUser', avatar_url: undefined, memberSince: '2024-01-01 08:00' },
     { id: 2, username: 'AnotherUser', avatar_url: undefined, memberSince: '2024-01-02 09:00' },
 ];
+*/
 
 // Function to find a user by username
-function findUserByUsername(username) {
+async function findUserByUsername(username) {
+    let users = await db.all('SELECT * FROM users');
+    //console.log(users.find(user => user.username === username));
     return users.find(user => user.username === username);
 }
 
 // Function to find a user by user ID
-function findUserById(userId) {
-    return users.find(user => user.id === userId);
+async function findUserById(userId) {
+    let users = await db.all('SELECT * FROM users');
+    //console.log(users.find(user => user.id === userId));
+    let user = users.find(user => user.id === userId)
+    console.log('found user:', user);
+    return user;
 }
 
 function getTime() {
@@ -255,10 +281,12 @@ function getTime() {
 }
 
 // Function to add a new user
-function addUser(username) {
-    const user = { id: users.length + 1, username, avatar_url: undefined, memberSince: getTime() };
-    users.push(user);
-    return user;
+async function addUser(userinfo) {
+    console.log(userinfo.data.name, userinfo.data.id, undefined, getTime())
+    await db.run('INSERT INTO users (username, hashedGoogleId, avatar_url, memberSince) VALUES (?, ?, ?, ?)',
+            [userinfo.data.name, userinfo.data.id, '', getTime()] 
+    );
+    return (findUserByUsername(userinfo.data.name));
 }
 
 // Middleware to check if user is authenticated
@@ -308,8 +336,8 @@ function logoutUser(req, res) {
 }
 
 // Function to get the current user from session
-function getCurrentUser(req) {
-    return findUserById(req.session.userId);
+async function getCurrentUser(req) {
+    return await findUserById(req.session.userId);
 }
 
 // Function to get all posts, sorted by latest first
@@ -318,8 +346,11 @@ function getPosts() {
 }
 
 // Function to add a new post
-function addPost(title, content, user) {
-    posts.push({ id: posts.length + 1, title, content, username: user.username, timestamp: getTime(), likes: 0 });
+async function addPost(title, content, user) {
+    console.log('current user to add post: ', user);
+    console.log('current username: ', user.username);
+    await db.run('INSERT INTO posts (title, content, username, timestamp, likes) VALUES (?, ?, ?, ?, ?)',
+            [title, content, user.username, getTime(), 0]);
 }
 
 
