@@ -5,6 +5,12 @@
     padding: 0;
 }
 
+.logoImg{
+    float: left;
+    width: 150px;
+    height: auto;
+}
+
 a {
     text-decoration: none;
     color: inherit;
