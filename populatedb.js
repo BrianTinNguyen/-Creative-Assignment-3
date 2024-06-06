@@ -10,6 +10,7 @@ async function initializeDB() {
     console.log('Opening database file:', dbFileName);
     let db = await sqlite.open({ filename: dbFileName, driver: sqlite3.Database });
 
+    console.log('initializing');
     await db.exec(`
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,6 +28,14 @@ async function initializeDB() {
             timestamp DATETIME NOT NULL,
             likes INTEGER NOT NULL
         );
+
+        CREATE TABLE IF NOT EXISTS comments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            postId TEXT,
+            comment TEXT,
+            username TEXT,
+            timestamp DATETIME
+        );
     `);
 
     console.log('initial data');
@@ -40,6 +49,21 @@ async function initializeDB() {
         { title: 'First Post', content: 'This is the first post', username: 'user1', timestamp: '2024-01-01 12:30:00', likes: 0 },
         { title: 'Second Post', content: 'This is the second post', username: 'user2', timestamp: '2024-01-02 12:30:00', likes: 0 }
     ];
+
+    const comments = [
+        { postId: 1, comment: 'yepepep', username: 'user1', timestamp: '2024-01-01 12:30:00' },
+        { postId: 1, comment: 'yepe', username: 'user1', timestamp: '2024-01-01 12:30:00' }
+    ];
+
+    // Insert sample data into the database
+    await Promise.all(comments.map(comment => {
+        console.log(comment.postId, comment.comment, comment.username, comment.timestamp);
+        return db.run(
+            'INSERT INTO comments (postId, comment, username, timestamp) VALUES (?, ?, ?, ?)',
+            [comment.postId, comment.comment, comment.username, comment.timestamp]
+        );
+    }));
+
 
     // Insert sample data into the database
     await Promise.all(users.map(user => {

@@ -29,7 +29,7 @@
         {{#if posts.length}}
             <ul>
                 {{#each posts}}
-                    <div>
+                    
                         <div class='postcontainer'>
                             <div class='userone'>
                                 {{username}} 
@@ -40,28 +40,41 @@
                             <div class='contentone'>
                                 {{content}}
                             </div>
-                             <div class='likestime'>
-                                {{likes}} {{timestamp}}
+                            <div class='likestime'>
+                                {{timestamp}}
                             </div>
-                                <div class='comments'>
+                            <div>
+                                <button type="button" class="post-button">Like</button> {{likes}}
+                            </div>
+                            <div class='comments'>
 
                                     <!-- Comment form -->
-    <form action="/comment/{{id}}" method="POST" class="comments">
-        <label for="comment">Comment:</label>
-        <input type="text" id="comment" name="comment" required>
-        <button type="submit" class="post-button">Comment</button>
-    </form>
+                                {{#if ../loggedIn}}
+                                    <form action="/comment/{{id}}" method="POST" class="comments">
+                                        <label for="comment">Comment:</label>
+                                        <input type="text" id="comment" name="comment" required>
+                                        <button type="submit" class="post-button">Comment</button>
+                                    </form>
+                                {{/if}}
 
-    {{#if comments}}
-        <ul>
-            {{#each comments}}
-                <li>{{this}}</li>
-            {{/each}}
-        </ul>
-    {{else}}
-        <p>No comments yet.</p>
-    {{/if}}
-    </div>
+                                {{#if ../comments.length}}
+                                    {{#each ../comments}}
+                                            <div class='postcontainer'>
+                                            <div>
+                                                {{username}} 
+                                            </div>
+                                            <div class='contentone'>
+                                                {{comment}} 
+                                            </div>
+                                            <div>
+                                                {{timestamp}}
+                                            </div>
+                                            </div>
+                                    {{/each}}
+                                {{else}}
+                                    <p>No comments yet.</p>
+                                {{/if}}
+                            </div>
                         </div>       
                 {{/each}}
             </ul>
@@ -82,6 +95,8 @@
             fetchEmojis();
         }
     }
+
+
 
     function fetchEmojis() {
         // Fetch a set of emojis from an API or a local file

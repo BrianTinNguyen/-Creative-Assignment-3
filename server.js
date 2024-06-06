@@ -66,7 +66,7 @@ app.use(
 );
 
 app.use((req, res, next) => {
-    res.locals.appName = 'Travel Blog';
+    res.locals.appName = 'PetPost';
     res.locals.copyrightYear = 2024;
     res.locals.postNeoType = 'Post';
     res.locals.loggedIn = req.session.loggedIn || false;
@@ -105,8 +105,10 @@ app.get('/', async (req, res) => {
         let users = await db.all('SELECT * FROM users');
         console.log(users);
         */
+        const comments = await db.all('SELECT * FROM comments ORDER BY postId ASC');
+        console.log(comments);
 
-        res.render('home', { posts: posts});
+        res.render('home', { posts: posts, comments: comments});
     } catch(err){
         console.error(err);
         res.status(500).send('Internal Server Error');
@@ -146,17 +148,59 @@ app.post('/posts', async (req, res) => {
     }
 });
 
-app.post('/like/:id', (req, res) => {
-    const postId = parseInt(req.params.id);
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-        post.likes += 1;
-    }
-    res.redirect('/');
+app.post('/like/:id', async (req, res) => {
+    const posts = await db.all('SELECT * FROM posts');
+    req.session.regenerate((err) => {
+        try{
+            const postId = parseInt(req.params.id);
+            const post = posts.find(p => p.id === postId);
+            if (post) {
+                post.likes += 1;
+        }
+        res.redirect('/');
+        } catch(err){
+            console.log(err);
+        }
+
+    });
 });
 
-app.get('/profile', isAuthenticated, (req, res) => {
-    const user = getCurrentUser(req);
+// Add route for submitting comments
+app.post('/comment/:id', isAuthenticated, async (req, res) => {
+    try{
+        const postId = parseInt(req.params.id);
+        const posts = await db.all('SELECT * FROM posts');
+        console.log(posts);
+        console.log('postid: ', postId);
+
+        const comment = req.body.comment;
+        const user = await getCurrentUser(req);
+
+        await addComment(postId, comment, user);
+
+        res.redirect('/');
+    } catch(err){
+        console.log(err);
+    }
+
+    /*
+    // Find the post by ID
+    const postIndex = posts.findIndex(post => post.id === postId);
+    if (postIndex !== -1) {
+        // Add the comment to the post
+        if (!posts[postIndex].comments) {
+            posts[postIndex].comments = [];
+        }
+        posts[postIndex].comments.push({ user: req.session.userId, comment });
+        res.redirect('/');
+    } else {
+        res.status(404).send('Post not found');
+    }*/
+});
+
+app.get('/profile', isAuthenticated, async (req, res) => {
+    const user = await getCurrentUser(req);
+    const posts = await db.all('SELECT * FROM posts');
     const userPosts = posts.filter(p => p.username === user.username);
     res.render('profile', { user, posts: userPosts });
 });
@@ -186,9 +230,9 @@ app.get('/logout', (req, res) => {
     logoutUser(req, res);
 });
 
-app.post('/delete/:id', isAuthenticated, (req, res) => {
+app.post('/delete/:id', isAuthenticated, async (req, res) => {
     const postId = parseInt(req.params.id);
-    posts = posts.filter(p => p.id !== postId || p.username !== getCurrentUser(req).username);
+    await db.run('DELETE FROM posts WHERE id = ?', [postId]);
     res.redirect('/');
 });
 
@@ -275,7 +319,7 @@ async function findUserById(userId) {
     return user;
 }
 
-function getTime() {
+async function getTime() {
     const date = new Date();
     return `${date.toISOString().split('T')[0]} ${date.toTimeString().split(' ')[0]}`;
 }
@@ -283,8 +327,9 @@ function getTime() {
 // Function to add a new user
 async function addUser(userinfo) {
     console.log(userinfo.data.name, userinfo.data.id, undefined, getTime())
+    let time = await getTime();
     await db.run('INSERT INTO users (username, hashedGoogleId, avatar_url, memberSince) VALUES (?, ?, ?, ?)',
-            [userinfo.data.name, userinfo.data.id, '', getTime()] 
+            [userinfo.data.name, userinfo.data.id, '', time] 
     );
     return (findUserByUsername(userinfo.data.name));
 }
@@ -347,30 +392,22 @@ function getPosts() {
 
 // Function to add a new post
 async function addPost(title, content, user) {
-    console.log('current user to add post: ', user);
-    console.log('current username: ', user.username);
+    //console.log('current user to add post: ', user);
+    //console.log('current username: ', user.username);
+    let time = await getTime();
     await db.run('INSERT INTO posts (title, content, username, timestamp, likes) VALUES (?, ?, ?, ?, ?)',
-            [title, content, user.username, getTime(), 0]);
+            [title, content, user.username, time, 0]);
+}
+
+async function addComment(postId, comment, user) {
+    //console.log('current user to add post: ', user);
+    //console.log('current username: ', user.username);
+    let time = await getTime();
+
+    await db.run('INSERT INTO comments (postId, comment, username, timestamp) VALUES (?, ?, ?, ?)',
+            [postId, comment, user.username, time]);
 }
 
 
 
 
-
-// Add route for submitting comments
-app.post('/comment/:id', isAuthenticated, (req, res) => {
-    const postId = parseInt(req.params.id);
-    const comment = req.body.comment;
-    // Find the post by ID
-    const postIndex = posts.findIndex(post => post.id === postId);
-    if (postIndex !== -1) {
-        // Add the comment to the post
-        if (!posts[postIndex].comments) {
-            posts[postIndex].comments = [];
-        }
-        posts[postIndex].comments.push({ user: req.session.userId, comment });
-        res.redirect('/');
-    } else {
-        res.status(404).send('Post not found');
-    }
-});
